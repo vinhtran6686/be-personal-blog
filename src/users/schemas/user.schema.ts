@@ -15,6 +15,7 @@ export type UserDocument = User & Document;
   toJSON: {
     transform: (doc, ret) => {
       delete ret.password;
+      delete ret.mfaSecret; // Don't expose MFA secret in responses
       return ret;
     },
   },
@@ -42,6 +43,13 @@ export class User {
 
   @Prop({ default: false })
   isEmailVerified: boolean;
+
+  // MFA related properties
+  @Prop({ default: false })
+  mfaEnabled: boolean;
+
+  @Prop({ type: String, required: false })
+  mfaSecret: string;
 
   async validatePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
